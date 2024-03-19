@@ -4,11 +4,12 @@ import { RedisIoAdapter } from '@modules/common/adapters/redis-io.adapter';
 import { ConfigService } from '@nestjs/config';
 import { WebsocketConfig } from '@config/types';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Logger } from 'nestjs-pino';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
+  app.useLogger(app.get(Logger));
 
   const configService = app.get(ConfigService<unknown, true>);
 
@@ -21,15 +22,15 @@ async function bootstrap() {
   if (configService.get<string>('app_env') !== 'production') {
     const config = new DocumentBuilder()
       .addBearerAuth()
-      .setTitle('Bumper Cars Core Service')
-      .setDescription('The Bumper Cars Core Service API description')
+      .setTitle('Bumper Cars Game Service')
+      .setDescription('The Bumper Cars Game Service API description')
       .setVersion('1.0')
       .build();
 
-      const document = SwaggerModule.createDocument(app, config);
-      SwaggerModule.setup('api', app, document);
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
   }
 
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();
